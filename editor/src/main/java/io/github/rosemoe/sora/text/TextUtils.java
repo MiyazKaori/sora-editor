@@ -25,6 +25,7 @@ package io.github.rosemoe.sora.text;
 
 import androidx.annotation.NonNull;
 
+import io.github.rosemoe.sora.util.Logger;
 import java.util.Objects;
 
 import io.github.rosemoe.sora.util.IntPair;
@@ -33,6 +34,8 @@ import io.github.rosemoe.sora.util.IntPair;
  * Utility class for texts
  */
 public class TextUtils {
+    
+    private static final Logger logger = Logger.instance("TextUtils");
 
     /**
      * Counts the number of whitespaces at the start of the given {@link CharSequence}.
@@ -75,6 +78,12 @@ public class TextUtils {
      * @return Generated space string
      */
     public static String createIndent(int indentSize, int tabWidth, boolean useTab) {
+        // Fix: Extra large indentation amount
+        if (indentSize > 16 * tabWidth) {
+            logger.w("Extra large indentation amount: %s", indentSize);
+            indentSize = 0;
+        }
+		//.logger.d("CreateIndent debug > indentSize: %s, tabWidth: %s, useTab: %s", indentSize, tabWidth, useTab);
         indentSize = Math.max(0, indentSize);
         int tab = 0;
         int space;
@@ -84,6 +93,7 @@ public class TextUtils {
         } else {
             space = indentSize;
         }
+		// logger.d("CreateIndent debug > tab: %s, space: %s, useTab: %s", tab, space, useTab);
         StringBuilder s = new StringBuilder();
         for (int i = 0; i < tab; i++) {
             s.append('\t');
@@ -91,6 +101,7 @@ public class TextUtils {
         for (int i = 0; i < space; i++) {
             s.append(' ');
         }
+		// logger.d("CreateIndent debug > indent length: %s, indent: %s", s.length(), s.toString());
         return s.toString();
     }
 
