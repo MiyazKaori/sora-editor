@@ -37,7 +37,14 @@ import com.android.build.api.dsl.ApplicationExtension
 fun Project.configureBaseExtension() {
     extensions.findByType(LibraryExtension::class.java)?.apply {
         compileSdk = 34
-        buildToolsVersion = "34.0.4"
+        println("Build with CI is ${System.getenv("CI")}")
+        println("Build with JITPACK is ${System.getenv("JITPACK")}")
+        
+        if (System.getenv("CI") != null || System.getenv("JITPACK") != null ) {
+            println("Auto select.")
+        } else {
+            buildToolsVersion = "34.0.4"
+        }
         
         defaultConfig {
             minSdk = 26
