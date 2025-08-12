@@ -24,15 +24,14 @@
 
 plugins {
     id("com.android.library")
-    id("com.vanniktech.maven.publish.base")
     id("kotlin-android")
+	id("maven-publish")
 }
 
 android {
     namespace = "io.github.rosemoe.sora"
 
     defaultConfig {
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
 
@@ -48,9 +47,17 @@ dependencies {
     api(libs.androidx.annotation)
     implementation(libs.androidx.collection)
     implementation(libs.kotlin.stdlib)
-    testImplementation(libs.junit)
-    testImplementation(libs.tests.google.truth)
-    testImplementation(libs.tests.robolectric)
-    androidTestImplementation(libs.androidx.test.junit)
-    androidTestImplementation(libs.androidx.test.espresso)
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+                groupId = "io.github.MiyazKaori"
+                artifactId = "sora-editor"
+                version = "0.23.7-patch1"
+            }
+        }
+    }
 }

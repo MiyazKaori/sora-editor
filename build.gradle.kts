@@ -22,78 +22,42 @@
  *     additional information or have any questions
  ******************************************************************************/
 
-import com.android.build.gradle.BaseExtension
-import com.vanniktech.maven.publish.AndroidSingleVariantLibrary
-import com.vanniktech.maven.publish.MavenPublishBaseExtension
+import com.android.build.api.dsl.LibraryExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 plugins {
-    id("build-logic.root-project")
-    alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.kotlin) apply false
-    alias(libs.plugins.publish) apply false
+	alias(libs.plugins.maven.publish)
 }
 
-val highApiProjects = arrayOf("editor-lsp")
+import com.android.build.api.dsl.ApplicationExtension
+
 
 fun Project.configureBaseExtension() {
-    extensions.findByType(BaseExtension::class)?.run {
-        compileSdkVersion(Versions.compileSdkVersion)
-        buildToolsVersion = Versions.buildToolsVersion
-
+    extensions.findByType(LibraryExtension::class.java)?.apply {
+        compileSdk = 34
+        buildToolsVersion = "34.0.4"
+        
         defaultConfig {
-            minSdk =
-                if (highApiProjects.contains(this@configureBaseExtension.name)) Versions.minSdkVersionHighApi else Versions.minSdkVersion
-            targetSdk = Versions.targetSdkVersion
-            versionCode = Versions.versionCode
-            versionName = Versions.versionName
-        }
-
-        compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            minSdk = 26
         }
     }
 }
 
 fun Project.configureKotlinExtension() {
-    extensions.findByType(KotlinAndroidProjectExtension::class)?.run {
+    extensions.findByType(KotlinAndroidProjectExtension::class.java)?.apply {
         jvmToolchain(17)
     }
 }
 
 subprojects {
-    group = "io.github.rosemoe"
-    version = Versions.versionName
-
-    plugins.withId("com.android.application") {
-        configureBaseExtension()
-    }
     plugins.withId("com.android.library") {
         configureBaseExtension()
     }
+    
     plugins.withId("org.jetbrains.kotlin.android") {
         configureKotlinExtension()
-    }
-
-    plugins.withId("com.vanniktech.maven.publish.base") {
-        configure<MavenPublishBaseExtension> {
-            group = "io.github.rosemoe"
-            version = Versions.versionName
-            pomFromGradleProperties()
-            publishToMavenCentral()
-            signAllPublications()
-            if ("editor-bom" != this@subprojects.name) {
-                configure(
-                    AndroidSingleVariantLibrary(
-                        variant = "release",
-                        sourcesJar = true,
-                        publishJavadocJar = false
-                    )
-                )
-            }
-        }
     }
 }
 

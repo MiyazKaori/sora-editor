@@ -26,7 +26,7 @@
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
-    includeBuild("build-logic")
+    
     repositories {
         gradlePluginPortal()
         google()
@@ -46,12 +46,5 @@ dependencyResolutionManagement {
 
 rootProject.name="sora-editor"
 include(
-    ":editor-bom",
-    ":editor",
-    ":app",
-    ":language-monarch",
-    ":language-java",
-    ":language-textmate",
-    ":editor-lsp",
-    ":language-treesitter"
+    ":editor"
 )
